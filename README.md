@@ -82,5 +82,3 @@
 ```bash
   terraform fmt -recursive
 ```
-
-
