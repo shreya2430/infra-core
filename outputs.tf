@@ -19,8 +19,8 @@ output "private_subnet_ids" {
 }
 
 output "internet_gateway_id" {
-  description = "ID of the Internet Gateway"
-  value       = aws_internet_gateway.main.id
+description = "ID of the Internet Gateway"
+value       = aws_internet_gateway.main.id
 }
 
 output "public_route_table_id" {
