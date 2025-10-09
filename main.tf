@@ -25,26 +25,26 @@ resource "aws_internet_gateway" "main" {
 
 # Create Public Subnets
 resource "aws_subnet" "public" {
-  count                   = length(var.public_subnet_cidrs)
+  for_each                = { for idx, cidr in var.public_subnet_cidrs : idx => cidr }
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.public_subnet_cidrs[count.index]
-  availability_zone       = data.aws_availability_zones.available.names[count.index]
+  cidr_block              = each.value
+  availability_zone       = element(data.aws_availability_zones.available.names, each.key % length(data.aws_availability_zones.available.names))
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "${var.vpc_name}-public-subnet-${count.index + 1}"
+    Name = "${var.vpc_name}-public-subnet-${each.key + 1}"
   }
 }
 
 # Create Private Subnets
 resource "aws_subnet" "private" {
-  count             = length(var.private_subnet_cidrs)
+  for_each          = { for idx, cidr in var.private_subnet_cidrs : idx => cidr }
   vpc_id            = aws_vpc.main.id
-  cidr_block        = var.private_subnet_cidrs[count.index]
-  availability_zone = data.aws_availability_zones.available.names[count.index]
+  cidr_block        = each.value
+  availability_zone = element(data.aws_availability_zones.available.names, each.key % length(data.aws_availability_zones.available.names))
 
   tags = {
-    Name = "${var.vpc_name}-private-subnet-${count.index + 1}"
+    Name = "${var.vpc_name}-private-subnet-${each.key + 1}"
   }
 }
 
@@ -75,14 +75,14 @@ resource "aws_route" "public_internet_gateway" {
 
 # Associate Public Subnets with Public Route Table
 resource "aws_route_table_association" "public" {
-  count          = length(aws_subnet.public)
-  subnet_id      = aws_subnet.public[count.index].id
+  for_each       = aws_subnet.public
+  subnet_id      = each.value.id
   route_table_id = aws_route_table.public.id
 }
 
 # Associate Private Subnets with Private Route Table
 resource "aws_route_table_association" "private" {
-  count          = length(aws_subnet.private)
-  subnet_id      = aws_subnet.private[count.index].id
+  for_each       = aws_subnet.private
+  subnet_id      = each.value.id
   route_table_id = aws_route_table.private.id
 }
