@@ -32,3 +32,30 @@ output "private_route_table_id" {
   description = "ID of the private route table"
   value       = aws_route_table.private.id
 }
+
+# Application Security Group
+output "application_security_group_id" {
+  description = "ID of the application security group"
+  value       = aws_security_group.application.id
+}
+
+# EC2 Instance
+output "ec2_instance_id" {
+  description = "ID of the EC2 instance"
+  value       = aws_instance.web_application.id
+}
+
+output "ec2_public_ip" {
+  description = "Public IP address of the EC2 instance"
+  value       = aws_instance.web_application.public_ip
+}
+
+output "ec2_public_dns" {
+  description = "Public DNS name of the EC2 instance"
+  value       = aws_instance.web_application.public_dns
+}
+
+output "application_url" {
+  description = "URL to access the application"
+  value       = "http://${aws_instance.web_application.public_ip}:8080/healthz"
+}
