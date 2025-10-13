@@ -33,3 +33,41 @@ variable "az_count" {
   type        = number
   default     = 3
 }
+
+# EC2 Instance Variables
+variable "custom_ami_id" {
+  description = "Custom AMI ID for EC2 instance (leave empty to use latest)"
+  type        = string
+  default     = ""
+}
+
+variable "instance_type" {
+  description = "EC2 instance type"
+  type        = string
+  default     = "t2.micro"
+}
+
+variable "key_name" {
+  description = "SSH key pair name for EC2 instance"
+  type        = string
+  default     = ""
+}
+
+# Database Variables
+variable "db_name" {
+  description = "PostgreSQL database name"
+  type        = string
+  default     = "csye6225"
+}
+
+variable "db_user" {
+  description = "PostgreSQL database user"
+  type        = string
+  default     = "csye6225"
+}
+
+variable "db_password" {
+  description = "PostgreSQL database password"
+  type        = string
+  sensitive   = true
+}
