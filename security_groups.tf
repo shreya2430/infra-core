@@ -31,7 +31,7 @@ resource "aws_security_group" "application" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Application port (Spring Boot default)
+  # Application port
   ingress {
     description = "Application port from anywhere"
     from_port   = 8080
