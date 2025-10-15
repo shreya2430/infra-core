@@ -82,3 +82,69 @@
 ```bash
   terraform fmt -recursive
 ```
+
+# Assignment 5
+## Part 1: Verify Packer AMI
+```bash
+# List your custom AMIs
+aws ec2 describe-images --owners self --profile dev --region us-east-1 \
+  --query 'Images[*].[ImageId,Name,CreationDate]' --output table
+
+# Verify AMI is shared with DEMO account
+AMI_ID=$(aws ec2 describe-images --owners self --profile dev --region us-east-1 \
+  --query 'Images | sort_by(@, &CreationDate) | [-1].ImageId' --output text)
+aws ec2 describe-image-attribute --image-id $AMI_ID \
+  --attribute launchPermission --profile dev --region us-east-1
+```
+## Part 2: Deploy Terraform Infrastructure
+```bash
+# Initialize Terraform
+terraform init
+
+# Plan
+AWS_PROFILE=dev terraform plan -var-file="dev.tfvars" \
+  -var="db_password=****" # replace **** with your DB password
+
+# Apply
+AWS_PROFILE=dev terraform apply -var-file="dev.tfvars" \
+  -var="db_password=****" # replace **** with your DB password
+
+# Get outputs
+terraform output
+```
+## Part 3: Verify Application
+```bash
+PUBLIC_IP=$(terraform output -raw ec2_public_ip)
+
+# Test your endpoints with the public IP address
+```
+
+## Part 4: Verify Security Requirements
+```bash
+# SSH into EC2
+ssh -i ~/.ssh/csye6225-aws ubuntu@$PUBLIC_IP
+
+# Check git NOT installed
+which git
+
+# Check application user
+ps aux | grep java | grep webapp
+
+# Check file ownership
+sudo ls -la /opt/csye6225/webapp.jar
+
+# Check database
+sudo -u postgres psql -d csye6225 -c "SELECT email FROM users;"
+
+# Check PostgreSQL only on localhost
+sudo ss -tlnp | grep 5432
+
+# Exit EC2
+exit
+```
+## Part 5: Clean Up
+```bash
+# Destroy Terraform-managed infrastructure
+AWS_PROFILE=dev terraform destroy -var-file="dev.tfvars" \
+  -var="db_password=****" # replace **** with your DB password
+```

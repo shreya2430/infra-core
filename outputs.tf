@@ -33,11 +33,13 @@ output "private_route_table_id" {
   value       = aws_route_table.private.id
 }
 
+# Application Security Group
 output "application_security_group_id" {
   description = "ID of the application security group"
   value       = aws_security_group.application.id
 }
 
+# EC2 Instance
 output "ec2_instance_id" {
   description = "ID of the EC2 instance"
   value       = aws_instance.web_application.id
