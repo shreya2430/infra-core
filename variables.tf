@@ -44,3 +44,9 @@ variable "key_name" {
   description = "SSH key pair name for EC2 instance"
   type        = string
 }
+
+variable "ami_owner_id" {
+  type        = string
+  description = "AWS account ID that owns the custom AMI (leave empty to use current account)"
+  default     = ""
+}
