@@ -1,7 +1,7 @@
 # Data source to get the latest custom AMI
 data "aws_ami" "custom" {
   most_recent = true
-  owners      = ["self"]
+  owners      = var.ami_owner_id != "" ? [var.ami_owner_id] : ["self"]
 
   filter {
     name   = "name"
