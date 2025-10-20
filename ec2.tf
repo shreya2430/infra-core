@@ -30,11 +30,11 @@ resource "aws_instance" "web_application" {
   }
 
   user_data = templatefile("${path.module}/user_data.sh", {
-    db_host         = aws_db_instance.csye6225.address
-    db_name         = var.db_name
-    db_user         = var.db_user
-    db_password     = var.db_password
-    s3_bucket_name  = aws_s3_bucket.images.id
+    db_host        = aws_db_instance.csye6225.address
+    db_name        = var.db_name
+    db_user        = var.db_user
+    db_password    = var.db_password
+    s3_bucket_name = aws_s3_bucket.images.id
   })
 
   disable_api_termination = false

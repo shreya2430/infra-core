@@ -40,6 +40,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "images" {
     id     = "transition-to-standard-ia"
     status = "Enabled"
 
+    filter {
+      prefix = "" # Apply to all objects
+    }
+
     transition {
       days          = 30
       storage_class = "STANDARD_IA"
