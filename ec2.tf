@@ -21,12 +21,21 @@ resource "aws_instance" "web_application" {
   subnet_id              = aws_subnet.public[0].id
   vpc_security_group_ids = [aws_security_group.application.id]
   key_name               = var.key_name
+  iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
 
   root_block_device {
     volume_size           = 25
     volume_type           = "gp2"
     delete_on_termination = true
   }
+
+  user_data = templatefile("${path.module}/user_data.sh", {
+    db_host         = aws_db_instance.csye6225.address
+    db_name         = var.db_name
+    db_user         = var.db_user
+    db_password     = var.db_password
+    s3_bucket_name  = aws_s3_bucket.images.id
+  })
 
   disable_api_termination = false
 
@@ -35,6 +44,7 @@ resource "aws_instance" "web_application" {
   }
 
   depends_on = [
-    aws_internet_gateway.main
+    aws_internet_gateway.main,
+    aws_db_instance.csye6225
   ]
 }
