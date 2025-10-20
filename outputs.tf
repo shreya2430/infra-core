@@ -59,3 +59,32 @@ output "application_url" {
   description = "URL to access the application"
   value       = "http://${aws_instance.web_application.public_ip}:8080/healthz"
 }
+
+# RDS outputs
+output "rds_endpoint" {
+  description = "RDS instance endpoint"
+  value       = aws_db_instance.csye6225.address
+  sensitive   = true
+}
+
+output "rds_port" {
+  description = "RDS instance port"
+  value       = aws_db_instance.csye6225.port
+}
+
+# S3 outputs
+output "s3_bucket_name" {
+  description = "S3 bucket name for images"
+  value       = aws_s3_bucket.images.id
+}
+
+output "s3_bucket_arn" {
+  description = "S3 bucket ARN"
+  value       = aws_s3_bucket.images.arn
+}
+
+# Database security group
+output "database_security_group_id" {
+  description = "ID of the database security group"
+  value       = aws_security_group.database.id
+}
