@@ -35,6 +35,7 @@ resource "aws_instance" "web_application" {
     db_user        = var.db_user
     db_password    = var.db_password
     s3_bucket_name = aws_s3_bucket.images.id
+    aws_region     = var.aws_region
   })
 
   disable_api_termination = false

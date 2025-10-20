@@ -9,6 +9,7 @@ DB_NAME=${db_name}
 DB_USER=${db_user}
 DB_PASSWORD=${db_password}
 S3_BUCKET_NAME=${s3_bucket_name}
+AWS_REGION=${aws_region}
 EOF
 
 # Set permissions
