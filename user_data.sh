@@ -1,24 +1,20 @@
 #!/bin/bash
-
 set -e
-set -x
 
-exec > >(tee /var/log/user-data.log) 2>&1
+# Create environment file for application
+cat > /opt/csye6225/webapp.env << EOF
+DB_HOST=${db_host}
+DB_PORT=5432
+DB_NAME=${db_name}
+DB_USER=${db_user}
+DB_PASSWORD=${db_password}
+S3_BUCKET_NAME=${s3_bucket_name}
+AWS_REGION=${aws_region}
+EOF
 
-echo "======================================"
-echo "Starting EC2 - Database Already Configured!"
-echo "======================================"
+# Set permissions
+chown csye6225:csye6225 /opt/csye6225/webapp.env
+chmod 400 /opt/csye6225/webapp.env
 
-# Everything is configured in AMI!
-# Just start the application
-
-sudo systemctl daemon-reload
-sudo systemctl start webapp.service
-
-sleep 5
-
-sudo systemctl status webapp.service --no-pager || true
-
-echo "======================================"
-echo "EC2 Ready! Application started."
-echo "======================================"
+# Restart application to pick up new environment
+systemctl restart webapp.service

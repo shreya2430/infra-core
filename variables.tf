@@ -50,3 +50,28 @@ variable "ami_owner_id" {
   description = "AWS account ID that owns the custom AMI (leave empty to use current account)"
   default     = ""
 }
+
+# RDS Configuration
+variable "db_name" {
+  description = "Database name"
+  type        = string
+  default     = "csye6225"
+}
+
+variable "db_user" {
+  description = "Database master username"
+  type        = string
+  default     = "csye6225"
+}
+
+variable "db_password" {
+  description = "Database master password"
+  type        = string
+  sensitive   = true
+}
+
+variable "db_instance_class" {
+  description = "RDS instance class"
+  type        = string
+  default     = "db.t3.micro"
+}
