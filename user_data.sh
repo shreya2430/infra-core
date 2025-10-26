@@ -28,7 +28,8 @@ echo "Starting CloudWatch Agent..."
 sleep 5
 systemctl status amazon-cloudwatch-agent || true
 
-# Restart application to pick up new environment
-systemctl restart webapp.service
+# Enable and start application
+systemctl enable webapp.service
+systemctl start webapp.service
 
 echo "Userdata script completed successfully"
