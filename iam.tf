@@ -56,3 +56,35 @@ resource "aws_iam_instance_profile" "ec2_profile" {
   name = "${var.vpc_name}-ec2-instance-profile"
   role = aws_iam_role.ec2_s3_access.name
 }
+
+# IAM Policy for CloudWatch access
+resource "aws_iam_policy" "cloudwatch_access" {
+  name        = "${var.vpc_name}-cloudwatch-access-policy"
+  description = "Policy for EC2 to send logs and metrics to CloudWatch"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "cloudwatch:PutMetricData",
+          "ec2:DescribeVolumes",
+          "ec2:DescribeTags",
+          "logs:PutLogEvents",
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:DescribeLogStreams",
+          "logs:DescribeLogGroups"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+# Attach CloudWatch policy to the existing EC2 role
+resource "aws_iam_role_policy_attachment" "ec2_cloudwatch_access" {
+  role       = aws_iam_role.ec2_s3_access.name
+  policy_arn = aws_iam_policy.cloudwatch_access.arn
+}
