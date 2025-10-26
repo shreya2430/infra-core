@@ -16,5 +16,19 @@ EOF
 chown csye6225:csye6225 /opt/csye6225/webapp.env
 chmod 400 /opt/csye6225/webapp.env
 
+# Start CloudWatch Agent
+echo "Starting CloudWatch Agent..."
+/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+  -a fetch-config \
+  -m ec2 \
+  -s \
+  -c file:/opt/aws/amazon-cloudwatch-agent/etc/cloudwatch-config.json
+
+# Verify CloudWatch Agent is running
+sleep 5
+systemctl status amazon-cloudwatch-agent || true
+
 # Restart application to pick up new environment
 systemctl restart webapp.service
+
+echo "Userdata script completed successfully"

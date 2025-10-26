@@ -75,3 +75,8 @@ variable "db_instance_class" {
   type        = string
   default     = "db.t3.micro"
 }
+
+variable "domain_name" {
+  description = "Domain name for the environment"
+  type        = string
+}
