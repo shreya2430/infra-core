@@ -217,7 +217,8 @@ resource "aws_iam_policy" "s3_policy" {
           "s3:GetBucketNotification",
           "s3:GetBucketObjectLockConfiguration",
           "s3:GetAccelerateConfiguration",
-          "s3:PutAccelerateConfiguration"
+          "s3:PutAccelerateConfiguration",
+          "s3:ListBucketVersions"
         ]
         Resource = "*"
       },
