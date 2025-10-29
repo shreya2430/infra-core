@@ -1,3 +1,23 @@
+# Generate random password for RDS
+resource "random_password" "db_password" {
+  length           = 16
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
+# Store password in SSM Parameter Store (optional but recommended)
+resource "aws_ssm_parameter" "db_password" {
+  name        = "/${var.vpc_name}/rds/password"
+  description = "RDS database password"
+  type        = "SecureString"
+  value       = random_password.db_password.result
+
+  tags = {
+    Name        = "${var.vpc_name}-rds-password"
+    Environment = var.vpc_name
+  }
+}
+
 # RDS Subnet Group - uses private subnets
 resource "aws_db_subnet_group" "main" {
   name       = "${var.vpc_name}-db-subnet-group"
@@ -30,7 +50,7 @@ resource "aws_db_instance" "csye6225" {
 
   db_name  = var.db_name
   username = var.db_user
-  password = var.db_password
+  password = random_password.db_password.result
 
   db_subnet_group_name   = aws_db_subnet_group.main.name
   parameter_group_name   = aws_db_parameter_group.postgres.name
