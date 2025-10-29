@@ -5,19 +5,6 @@ resource "random_password" "db_password" {
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
-# Store password in SSM Parameter Store (optional but recommended)
-resource "aws_ssm_parameter" "db_password" {
-  name        = "/${var.vpc_name}/rds/password"
-  description = "RDS database password"
-  type        = "SecureString"
-  value       = random_password.db_password.result
-
-  tags = {
-    Name        = "${var.vpc_name}-rds-password"
-    Environment = var.vpc_name
-  }
-}
-
 # RDS Subnet Group - uses private subnets
 resource "aws_db_subnet_group" "main" {
   name       = "${var.vpc_name}-db-subnet-group"
