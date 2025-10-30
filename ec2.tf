@@ -33,7 +33,7 @@ resource "aws_instance" "web_application" {
     db_host        = aws_db_instance.csye6225.address
     db_name        = var.db_name
     db_user        = var.db_user
-    db_password    = var.db_password
+    db_password    = random_password.db_password.result
     s3_bucket_name = aws_s3_bucket.images.id
     aws_region     = var.aws_region
   })
