@@ -4,7 +4,7 @@ resource "aws_security_group" "application" {
   description = "Security group for web application"
   vpc_id      = aws_vpc.main.id
 
-  # SSH access
+  # SSH access from anywhere
   ingress {
     description = "SSH from anywhere"
     from_port   = 22
@@ -13,31 +13,13 @@ resource "aws_security_group" "application" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # HTTP access
+  # Application port - only from load balancer
   ingress {
-    description = "HTTP from anywhere"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # HTTPS access
-  ingress {
-    description = "HTTPS from anywhere"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Application port
-  ingress {
-    description = "Application port from anywhere"
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    description     = "Application port from load balancer"
+    from_port       = var.app_port
+    to_port         = var.app_port
+    protocol        = "tcp"
+    security_groups = [aws_security_group.load_balancer.id]
   }
 
   # Allow all outbound traffic

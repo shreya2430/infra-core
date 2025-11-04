@@ -279,7 +279,8 @@ resource "aws_iam_policy" "iam_policy" {
           "iam:ListInstanceProfilesForRole",
           "iam:AddRoleToInstanceProfile",
           "iam:RemoveRoleFromInstanceProfile",
-          "iam:PassRole"
+          "iam:PassRole",
+          "iam:CreateServiceLinkedRole"
         ]
         Resource = "*"
       },
@@ -367,7 +368,10 @@ resource "aws_iam_policy" "cloudwatch_policy" {
           "cloudwatch:PutMetricAlarm",
           "cloudwatch:DeleteAlarms",
           "cloudwatch:DescribeAlarmsForMetric",
-          "cloudwatch:SetAlarmState"
+          "cloudwatch:SetAlarmState",
+          "cloudwatch:ListTagsForResource",
+          "cloudwatch:TagResource",
+          "cloudwatch:UntagResource"
         ]
         Resource = "*"
       }
@@ -450,6 +454,135 @@ resource "aws_iam_policy" "ami_policy" {
   }
 }
 
+# Policy for Auto Scaling operations
+resource "aws_iam_policy" "autoscaling_policy" {
+  name        = "${var.environment}-autoscaling-policy"
+  description = "Policy for Auto Scaling operations in ${var.environment} environment"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AutoScalingManagement"
+        Effect = "Allow"
+        Action = [
+          "autoscaling:CreateAutoScalingGroup",
+          "autoscaling:UpdateAutoScalingGroup",
+          "autoscaling:DeleteAutoScalingGroup",
+          "autoscaling:DescribeAutoScalingGroups",
+          "autoscaling:DescribeAutoScalingInstances",
+          "autoscaling:DescribeScalingActivities",
+          "autoscaling:DescribeScheduledActions",
+          "autoscaling:SetDesiredCapacity",
+          "autoscaling:TerminateInstanceInAutoScalingGroup",
+          "autoscaling:PutScalingPolicy",
+          "autoscaling:DeletePolicy",
+          "autoscaling:DescribePolicies",
+          "autoscaling:ExecutePolicy",
+          "autoscaling:PutNotificationConfiguration",
+          "autoscaling:DeleteNotificationConfiguration",
+          "autoscaling:DescribeNotificationConfigurations",
+          "autoscaling:PutScheduledUpdateGroupAction",
+          "autoscaling:DeleteScheduledAction",
+          "autoscaling:EnableMetricsCollection",
+          "autoscaling:DisableMetricsCollection",
+          "autoscaling:DescribeMetricCollectionTypes",
+          "autoscaling:SuspendProcesses",
+          "autoscaling:ResumeProcesses",
+          "autoscaling:AttachInstances",
+          "autoscaling:DetachInstances",
+          "autoscaling:AttachLoadBalancers",
+          "autoscaling:DetachLoadBalancers",
+          "autoscaling:AttachLoadBalancerTargetGroups",
+          "autoscaling:DetachLoadBalancerTargetGroups",
+          "autoscaling:DescribeLoadBalancers",
+          "autoscaling:DescribeLoadBalancerTargetGroups",
+          "autoscaling:SetInstanceHealth",
+          "autoscaling:SetInstanceProtection",
+          "autoscaling:DescribeLifecycleHooks",
+          "autoscaling:PutLifecycleHook",
+          "autoscaling:DeleteLifecycleHook",
+          "autoscaling:CompleteLifecycleAction",
+          "autoscaling:RecordLifecycleActionHeartbeat"
+        ]
+        Resource = "*"
+      },
+      {
+        Sid    = "LaunchTemplateManagement"
+        Effect = "Allow"
+        Action = [
+          "ec2:CreateLaunchTemplate",
+          "ec2:CreateLaunchTemplateVersion",
+          "ec2:DeleteLaunchTemplate",
+          "ec2:DeleteLaunchTemplateVersions",
+          "ec2:DescribeLaunchTemplates",
+          "ec2:DescribeLaunchTemplateVersions",
+          "ec2:ModifyLaunchTemplate",
+          "ec2:GetLaunchTemplateData"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+
+  tags = {
+    Environment = var.environment
+  }
+}
+
+# Policy for Elastic Load Balancing operations
+resource "aws_iam_policy" "elb_policy" {
+  name        = "${var.environment}-elb-policy"
+  description = "Policy for Elastic Load Balancing operations in ${var.environment} environment"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "LoadBalancerManagement"
+        Effect = "Allow"
+        Action = [
+          "elasticloadbalancing:CreateLoadBalancer",
+          "elasticloadbalancing:DeleteLoadBalancer",
+          "elasticloadbalancing:DescribeLoadBalancers",
+          "elasticloadbalancing:DescribeLoadBalancerAttributes",
+          "elasticloadbalancing:ModifyLoadBalancerAttributes",
+          "elasticloadbalancing:SetLoadBalancerPoliciesOfListener",
+          "elasticloadbalancing:CreateListener",
+          "elasticloadbalancing:DeleteListener",
+          "elasticloadbalancing:DescribeListeners",
+          "elasticloadbalancing:DescribeListenerAttributes",
+          "elasticloadbalancing:ModifyListener",
+          "elasticloadbalancing:CreateTargetGroup",
+          "elasticloadbalancing:DeleteTargetGroup",
+          "elasticloadbalancing:DescribeTargetGroups",
+          "elasticloadbalancing:DescribeTargetGroupAttributes",
+          "elasticloadbalancing:ModifyTargetGroup",
+          "elasticloadbalancing:ModifyTargetGroupAttributes",
+          "elasticloadbalancing:RegisterTargets",
+          "elasticloadbalancing:DeregisterTargets",
+          "elasticloadbalancing:DescribeTargetHealth",
+          "elasticloadbalancing:CreateRule",
+          "elasticloadbalancing:DeleteRule",
+          "elasticloadbalancing:DescribeRules",
+          "elasticloadbalancing:ModifyRule",
+          "elasticloadbalancing:SetIpAddressType",
+          "elasticloadbalancing:SetSecurityGroups",
+          "elasticloadbalancing:SetSubnets",
+          "elasticloadbalancing:AddTags",
+          "elasticloadbalancing:RemoveTags",
+          "elasticloadbalancing:DescribeTags"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+
+  tags = {
+    Environment = var.environment
+  }
+}
+
 # Create IAM group for DEV environment
 resource "aws_iam_group" "dev_group" {
   count = var.environment == "dev" ? 1 : 0
@@ -508,6 +641,16 @@ resource "aws_iam_group_policy_attachment" "ami_attachment" {
   policy_arn = aws_iam_policy.ami_policy.arn
 }
 
+resource "aws_iam_group_policy_attachment" "autoscaling_attachment" {
+  group      = local.group_name
+  policy_arn = aws_iam_policy.autoscaling_policy.arn
+}
+
+resource "aws_iam_group_policy_attachment" "elb_attachment" {
+  group      = local.group_name
+  policy_arn = aws_iam_policy.elb_policy.arn
+}
+
 # Variables
 variable "environment" {
   description = "Environment name (dev or demo)"
@@ -546,6 +689,8 @@ output "policy_arns" {
     cloudwatch_policy = aws_iam_policy.cloudwatch_policy.arn
     route53_policy    = aws_iam_policy.route53_policy.arn
     ami_policy        = aws_iam_policy.ami_policy.arn
+    autoscaling_policy = aws_iam_policy.autoscaling_policy.arn
+    elb_policy        = aws_iam_policy.elb_policy.arn
   }
 }
 
