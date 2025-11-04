@@ -681,16 +681,16 @@ output "group_name" {
 output "policy_arns" {
   description = "ARNs of all policies created"
   value = {
-    ec2_policy        = aws_iam_policy.ec2_policy.arn
-    vpc_policy        = aws_iam_policy.vpc_policy.arn
-    rds_policy        = aws_iam_policy.rds_policy.arn
-    s3_policy         = aws_iam_policy.s3_policy.arn
-    iam_policy        = aws_iam_policy.iam_policy.arn
-    cloudwatch_policy = aws_iam_policy.cloudwatch_policy.arn
-    route53_policy    = aws_iam_policy.route53_policy.arn
-    ami_policy        = aws_iam_policy.ami_policy.arn
+    ec2_policy         = aws_iam_policy.ec2_policy.arn
+    vpc_policy         = aws_iam_policy.vpc_policy.arn
+    rds_policy         = aws_iam_policy.rds_policy.arn
+    s3_policy          = aws_iam_policy.s3_policy.arn
+    iam_policy         = aws_iam_policy.iam_policy.arn
+    cloudwatch_policy  = aws_iam_policy.cloudwatch_policy.arn
+    route53_policy     = aws_iam_policy.route53_policy.arn
+    ami_policy         = aws_iam_policy.ami_policy.arn
     autoscaling_policy = aws_iam_policy.autoscaling_policy.arn
-    elb_policy        = aws_iam_policy.elb_policy.arn
+    elb_policy         = aws_iam_policy.elb_policy.arn
   }
 }
 
