@@ -39,25 +39,37 @@ output "application_security_group_id" {
   value       = aws_security_group.application.id
 }
 
-# EC2 Instance
-output "ec2_instance_id" {
-  description = "ID of the EC2 instance"
-  value       = aws_instance.web_application.id
+# Load Balancer Security Group
+output "load_balancer_security_group_id" {
+  description = "ID of the load balancer security group"
+  value       = aws_security_group.load_balancer.id
 }
 
-output "ec2_public_ip" {
-  description = "Public IP address of the EC2 instance"
-  value       = aws_instance.web_application.public_ip
+# Load Balancer
+output "load_balancer_dns" {
+  description = "DNS name of the load balancer"
+  value       = aws_lb.app.dns_name
 }
 
-output "ec2_public_dns" {
-  description = "Public DNS name of the EC2 instance"
-  value       = aws_instance.web_application.public_dns
+output "load_balancer_arn" {
+  description = "ARN of the load balancer"
+  value       = aws_lb.app.arn
 }
 
 output "application_url" {
   description = "URL to access the application"
-  value       = "http://${aws_instance.web_application.public_ip}:8080/healthz"
+  value       = "http://${var.domain_name}"
+}
+
+# Auto Scaling Group
+output "autoscaling_group_name" {
+  description = "Name of the Auto Scaling Group"
+  value       = aws_autoscaling_group.app.name
+}
+
+output "launch_template_id" {
+  description = "ID of the launch template"
+  value       = aws_launch_template.app.id
 }
 
 # RDS outputs

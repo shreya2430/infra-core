@@ -15,37 +15,37 @@ data "aws_ami" "custom" {
 }
 
 # EC2 Instance
-resource "aws_instance" "web_application" {
-  ami                    = var.custom_ami_id != "" ? var.custom_ami_id : data.aws_ami.custom.id
-  instance_type          = var.instance_type
-  subnet_id              = aws_subnet.public[0].id
-  vpc_security_group_ids = [aws_security_group.application.id]
-  key_name               = var.key_name
-  iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
-
-  root_block_device {
-    volume_size           = 25
-    volume_type           = "gp2"
-    delete_on_termination = true
-  }
-
-  user_data = templatefile("${path.module}/user_data.sh", {
-    db_host        = aws_db_instance.csye6225.address
-    db_name        = var.db_name
-    db_user        = var.db_user
-    db_password    = random_password.db_password.result
-    s3_bucket_name = aws_s3_bucket.images.id
-    aws_region     = var.aws_region
-  })
-
-  disable_api_termination = false
-
-  tags = {
-    Name = "${var.vpc_name}-web-application"
-  }
-
-  depends_on = [
-    aws_internet_gateway.main,
-    aws_db_instance.csye6225
-  ]
-}
+# resource "aws_instance" "web_application" {
+#   ami                    = var.custom_ami_id != "" ? var.custom_ami_id : data.aws_ami.custom.id
+#   instance_type          = var.instance_type
+#   subnet_id              = aws_subnet.public[0].id
+#   vpc_security_group_ids = [aws_security_group.application.id]
+#   key_name               = var.key_name
+#   iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
+#
+#   root_block_device {
+#     volume_size           = 25
+#     volume_type           = "gp2"
+#     delete_on_termination = true
+#   }
+#
+#   user_data = templatefile("${path.module}/user_data.sh", {
+#     db_host        = aws_db_instance.csye6225.address
+#     db_name        = var.db_name
+#     db_user        = var.db_user
+#     db_password    = random_password.db_password.result
+#     s3_bucket_name = aws_s3_bucket.images.id
+#     aws_region     = var.aws_region
+#   })
+#
+#   disable_api_termination = false
+#
+#   tags = {
+#     Name = "${var.vpc_name}-web-application"
+#   }
+#
+#   depends_on = [
+#     aws_internet_gateway.main,
+#     aws_db_instance.csye6225
+#   ]
+# }
