@@ -23,14 +23,15 @@ resource "aws_launch_template" "app" {
       volume_type           = "gp2"
       delete_on_termination = true
       encrypted             = true
+      kms_key_id            = aws_kms_key.ec2.arn
     }
   }
 
   user_data = base64encode(templatefile("${path.module}/user_data.sh", {
+    vpc_name       = var.vpc_name
     db_host        = aws_db_instance.csye6225.address
     db_name        = var.db_name
     db_user        = var.db_user
-    db_password    = random_password.db_password.result
     s3_bucket_name = aws_s3_bucket.images.id
     aws_region     = var.aws_region
   }))
@@ -43,7 +44,9 @@ resource "aws_launch_template" "app" {
   }
 
   depends_on = [
-    aws_db_instance.csye6225
+    aws_db_instance.csye6225,
+    aws_secretsmanager_secret_version.db_password,
+    aws_secretsmanager_secret_version.sendgrid_api_key
   ]
 }
 
@@ -65,6 +68,8 @@ resource "aws_autoscaling_group" "app" {
     id      = aws_launch_template.app.id
     version = "$Latest"
   }
+
+  wait_for_capacity_timeout = "0"
 
   tag {
     key                 = "Name"

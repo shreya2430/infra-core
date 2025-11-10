@@ -100,3 +100,36 @@ output "database_security_group_id" {
   description = "ID of the database security group"
   value       = aws_security_group.database.id
 }
+
+# KMS Key outputs
+output "kms_ec2_key_id" {
+  description = "KMS key ID for EC2 encryption"
+  value       = aws_kms_key.ec2.id
+}
+
+output "kms_rds_key_id" {
+  description = "KMS key ID for RDS encryption"
+  value       = aws_kms_key.rds.id
+}
+
+output "kms_s3_key_id" {
+  description = "KMS key ID for S3 encryption"
+  value       = aws_kms_key.s3.id
+}
+
+output "kms_secrets_key_id" {
+  description = "KMS key ID for Secrets Manager encryption"
+  value       = aws_kms_key.secrets.id
+}
+# Secrets Manager outputs
+output "db_password_secret_arn" {
+  description = "ARN of the database password secret"
+  value       = aws_secretsmanager_secret.db_password.arn
+  sensitive   = true
+}
+
+output "sendgrid_api_key_secret_arn" {
+  description = "ARN of the SendGrid API key secret"
+  value       = aws_secretsmanager_secret.sendgrid_api_key.arn
+  sensitive   = true
+}

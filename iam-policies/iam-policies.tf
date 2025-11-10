@@ -244,10 +244,10 @@ resource "aws_iam_policy" "s3_policy" {
   }
 }
 
-# Policy for IAM role creation (needed for EC2 instance profiles)
+# Policy for IAM and KMS operations (MERGED)
 resource "aws_iam_policy" "iam_policy" {
   name        = "${var.environment}-iam-policy"
-  description = "Policy for IAM operations in ${var.environment} environment"
+  description = "Policy for IAM and KMS operations in ${var.environment} environment"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -318,6 +318,47 @@ resource "aws_iam_policy" "iam_policy" {
           "iam:AttachGroupPolicy",
           "iam:DetachGroupPolicy",
           "iam:ListAttachedGroupPolicies"
+        ]
+        Resource = "*"
+      },
+      {
+        Sid    = "KMSKeyManagement"
+        Effect = "Allow"
+        Action = [
+          "kms:CreateKey",
+          "kms:CreateAlias",
+          "kms:DeleteAlias",
+          "kms:DescribeKey",
+          "kms:GetKeyPolicy",
+          "kms:GetKeyRotationStatus",
+          "kms:ListAliases",
+          "kms:ListKeys",
+          "kms:ListResourceTags",
+          "kms:TagResource",
+          "kms:UntagResource",
+          "kms:UpdateAlias",
+          "kms:UpdateKeyDescription",
+          "kms:EnableKeyRotation",
+          "kms:DisableKeyRotation",
+          "kms:ScheduleKeyDeletion",
+          "kms:CancelKeyDeletion",
+          "kms:PutKeyPolicy"
+        ]
+        Resource = "*"
+      },
+      {
+        Sid    = "KMSEncryptionDecryption"
+        Effect = "Allow"
+        Action = [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey",
+          "kms:GenerateDataKeyWithoutPlaintext",
+          "kms:DescribeKey",
+          "kms:CreateGrant",
+          "kms:ListGrants",
+          "kms:RevokeGrant"
         ]
         Resource = "*"
       }

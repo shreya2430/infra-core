@@ -34,6 +34,7 @@ resource "aws_db_instance" "csye6225" {
   allocated_storage = 20
   storage_type      = "gp2"
   storage_encrypted = true
+  kms_key_id        = aws_kms_key.rds.arn  # Use KMS key for RDS encryption
 
   db_name  = var.db_name
   username = var.db_user
