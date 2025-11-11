@@ -19,6 +19,16 @@ jobs:
         with:
           terraform_version: ~1.0
 
+      - name: Create Lambda placeholder zip
+        run: |
+          mkdir -p lambda-temp/src
+          echo 'exports.handler = async (event) => { return { statusCode: 200, body: "OK" }; };' > lambda-temp/src/index.js
+          cd lambda-temp
+          zip -r ../lambda-placeholder.zip .
+          cd ..
+          rm -rf lambda-temp
+          ls -lh lambda-placeholder.zip
+
       - name: Terraform Format Check
         id: fmt
         run: terraform fmt -check -recursive
