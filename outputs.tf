@@ -133,3 +133,26 @@ output "sendgrid_api_key_secret_arn" {
   value       = aws_secretsmanager_secret.sendgrid_api_key.arn
   sensitive   = true
 }
+
+# SNS outputs
+output "sns_topic_arn" {
+  description = "ARN of the SNS topic for user verification"
+  value       = aws_sns_topic.user_verification.arn
+}
+
+# Lambda outputs
+output "lambda_function_name" {
+  description = "Name of the Lambda function"
+  value       = aws_lambda_function.email_verification.function_name
+}
+
+output "lambda_function_arn" {
+  description = "ARN of the Lambda function"
+  value       = aws_lambda_function.email_verification.arn
+}
+
+# DynamoDB outputs
+output "dynamodb_table_name" {
+  description = "Name of the DynamoDB table for email tracking"
+  value       = aws_dynamodb_table.email_tracking.name
+}

@@ -54,6 +54,7 @@ DB_PASSWORD=$DB_PASSWORD
 S3_BUCKET_NAME=${s3_bucket_name}
 AWS_REGION=${aws_region}
 SENDGRID_API_KEY=$SENDGRID_API_KEY
+SNS_TOPIC_ARN=${sns_topic_arn}
 EOF
 
 # Set permissions

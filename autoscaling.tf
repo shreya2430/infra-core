@@ -34,6 +34,7 @@ resource "aws_launch_template" "app" {
     db_user        = var.db_user
     s3_bucket_name = aws_s3_bucket.images.id
     aws_region     = var.aws_region
+    sns_topic_arn  = aws_sns_topic.user_verification.arn
   }))
 
   tag_specifications {
