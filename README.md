@@ -148,3 +148,26 @@ exit
 AWS_PROFILE=dev terraform destroy -var-file="dev.tfvars" \
   -var="db_password=****" # replace **** with your DB password
 ```
+
+## SSL Certificate for DEMO Environment
+
+For the DEMO environment, we use an SSL certificate from Namecheap.
+
+### Import Certificate to AWS ACM (DEMO Account)
+
+After receiving the SSL certificate from Namecheap, import it to AWS Certificate Manager using the following command:
+```bash
+aws acm import-certificate \
+  --certificate fileb://demo_cloud-webapp_me.crt \
+  --certificate-chain fileb://demo_cloud-webapp_me.ca-bundle \
+  --private-key fileb://demo_cloud-webapp_me.key \
+  --region us-east-1 \
+  --profile demo
+```
+
+**Files required:**
+- `demo_cloud-webapp_me.crt` - Certificate file from Namecheap
+- `demo_cloud-webapp_me.ca-bundle` - Certificate chain/bundle from Namecheap
+- `demo_cloud-webapp_me.key` - Private key generated during CSR creation
+
+**Note:** The certificate ARN will be automatically discovered by Terraform using the `aws_acm_certificate` data source.
