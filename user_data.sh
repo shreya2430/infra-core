@@ -16,7 +16,7 @@ echo "AWS Region: $REGION"
 # Retrieve database password from Secrets Manager
 echo "Retrieving database password from Secrets Manager..."
 DB_PASSWORD=$(aws secretsmanager get-secret-value \
-  --secret-id ${vpc_name}-db-password \
+  --secret-id ${vpc_name}-db-password-v2 \
   --region $REGION \
   --query SecretString \
   --output text)
@@ -31,7 +31,7 @@ echo "Database password retrieved successfully"
 # Retrieve SendGrid API key from Secrets Manager
 echo "Retrieving SendGrid API key from Secrets Manager..."
 SENDGRID_API_KEY=$(aws secretsmanager get-secret-value \
-  --secret-id ${vpc_name}-sendgrid-api-key \
+  --secret-id ${vpc_name}-sendgrid-api-key-v2 \
   --region $REGION \
   --query SecretString \
   --output text)

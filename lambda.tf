@@ -124,7 +124,7 @@ resource "aws_lambda_function" "email_verification" {
 
   environment {
     variables = {
-      SENDGRID_API_KEY    = var.sendgrid_api_key
+      SENDGRID_SECRET_ARN = aws_secretsmanager_secret.sendgrid_api_key.arn
       FROM_EMAIL          = "noreply@${var.domain_name}"
       DOMAIN              = var.domain_name
       DYNAMODB_TABLE_NAME = aws_dynamodb_table.email_tracking.name

@@ -1,9 +1,9 @@
 # Store RDS database password in Secrets Manager
 resource "aws_secretsmanager_secret" "db_password" {
-  name                    = "${var.vpc_name}-db-password"
+  name                    = "${var.vpc_name}-db-password-v2" # Changed name
   description             = "Database password for RDS instance"
   kms_key_id              = aws_kms_key.secrets.id
-  recovery_window_in_days = 7
+  recovery_window_in_days = 0 # Changed to 0 for immediate deletion
 
   tags = {
     Name        = "${var.vpc_name}-db-password"
@@ -18,10 +18,10 @@ resource "aws_secretsmanager_secret_version" "db_password" {
 
 # Store SendGrid API Key in Secrets Manager
 resource "aws_secretsmanager_secret" "sendgrid_api_key" {
-  name                    = "${var.vpc_name}-sendgrid-api-key"
+  name                    = "${var.vpc_name}-sendgrid-api-key-v2" # Changed name
   description             = "SendGrid API key for email service"
   kms_key_id              = aws_kms_key.secrets.id
-  recovery_window_in_days = 7
+  recovery_window_in_days = 0 # Changed to 0
 
   tags = {
     Name        = "${var.vpc_name}-sendgrid-api-key"

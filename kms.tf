@@ -1,3 +1,6 @@
+# Data source to get current AWS account ID
+data "aws_caller_identity" "current" {}
+
 # KMS Key for EC2 (EBS volumes)
 resource "aws_kms_key" "ec2" {
   description             = "KMS key for EC2 EBS encryption in ${var.aws_region}"
@@ -5,21 +8,21 @@ resource "aws_kms_key" "ec2" {
   enable_key_rotation     = true
   rotation_period_in_days = 90
 
-  # ADD THIS POLICY
   policy = jsonencode({
     Version = "2012-10-17"
+    Id      = "key-policy-ec2"
     Statement = [
       {
         Sid    = "Enable IAM User Permissions"
         Effect = "Allow"
         Principal = {
-          AWS = "arn:aws:iam::648758970740:root"
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
         }
         Action   = "kms:*"
         Resource = "*"
       },
       {
-        Sid    = "Allow Auto Scaling to use the key"
+        Sid    = "Allow Auto Scaling to use the key for all operations"
         Effect = "Allow"
         Principal = {
           Service = "autoscaling.amazonaws.com"
@@ -30,7 +33,8 @@ resource "aws_kms_key" "ec2" {
           "kms:ReEncrypt*",
           "kms:GenerateDataKey*",
           "kms:CreateGrant",
-          "kms:DescribeKey"
+          "kms:DescribeKey",
+          "kms:RetireGrant"
         ]
         Resource = "*"
       },
@@ -49,6 +53,45 @@ resource "aws_kms_key" "ec2" {
           "kms:DescribeKey"
         ]
         Resource = "*"
+      },
+      {
+        Sid    = "Allow service-linked role to use the key"
+        Effect = "Allow"
+        Principal = {
+          AWS = [
+            "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
+          ]
+        }
+        Action = [
+          "kms:Decrypt",
+          "kms:Encrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:CreateGrant",
+          "kms:DescribeKey",
+          "kms:RetireGrant"
+        ]
+        Resource = "*"
+      },
+      {
+        Sid    = "Allow attachment of persistent resources"
+        Effect = "Allow"
+        Principal = {
+          AWS = [
+            "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/autoscaling.amazonaws.com/AWSServiceRoleForAutoScaling"
+          ]
+        }
+        Action = [
+          "kms:CreateGrant",
+          "kms:ListGrants",
+          "kms:RevokeGrant"
+        ]
+        Resource = "*"
+        Condition = {
+          Bool = {
+            "kms:GrantIsForAWSResource" = "true"
+          }
+        }
       }
     ]
   })
@@ -72,6 +115,37 @@ resource "aws_kms_key" "rds" {
   enable_key_rotation     = true
   rotation_period_in_days = 90
 
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "Enable IAM User Permissions"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action   = "kms:*"
+        Resource = "*"
+      },
+      {
+        Sid    = "Allow RDS to use the key"
+        Effect = "Allow"
+        Principal = {
+          Service = "rds.amazonaws.com"
+        }
+        Action = [
+          "kms:Decrypt",
+          "kms:Encrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:CreateGrant",
+          "kms:DescribeKey"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+
   tags = {
     Name        = "${var.vpc_name}-rds-encryption-key"
     Environment = var.vpc_name
@@ -91,6 +165,36 @@ resource "aws_kms_key" "s3" {
   enable_key_rotation     = true
   rotation_period_in_days = 90
 
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "Enable IAM User Permissions"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action   = "kms:*"
+        Resource = "*"
+      },
+      {
+        Sid    = "Allow S3 to use the key"
+        Effect = "Allow"
+        Principal = {
+          Service = "s3.amazonaws.com"
+        }
+        Action = [
+          "kms:Decrypt",
+          "kms:Encrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+
   tags = {
     Name        = "${var.vpc_name}-s3-encryption-key"
     Environment = var.vpc_name
@@ -109,6 +213,37 @@ resource "aws_kms_key" "secrets" {
   deletion_window_in_days = 10
   enable_key_rotation     = true
   rotation_period_in_days = 90
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "Enable IAM User Permissions"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action   = "kms:*"
+        Resource = "*"
+      },
+      {
+        Sid    = "Allow Secrets Manager to use the key"
+        Effect = "Allow"
+        Principal = {
+          Service = "secretsmanager.amazonaws.com"
+        }
+        Action = [
+          "kms:Decrypt",
+          "kms:Encrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:CreateGrant",
+          "kms:DescribeKey"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
 
   tags = {
     Name        = "${var.vpc_name}-secrets-manager-encryption-key"
