@@ -186,3 +186,9 @@ variable "lb_health_check_path" {
   type        = string
   default     = "/healthz"
 }
+
+variable "sendgrid_api_key" {
+  description = "SendGrid API key for sending emails"
+  type        = string
+  sensitive   = true
+}

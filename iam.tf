@@ -40,6 +40,18 @@ resource "aws_iam_policy" "s3_access" {
           aws_s3_bucket.images.arn,
           "${aws_s3_bucket.images.arn}/*"
         ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt",
+          "kms:Encrypt",
+          "kms:GenerateDataKey",
+          "kms:DescribeKey"
+        ]
+        Resource = [
+          aws_kms_key.s3.arn
+        ]
       }
     ]
   })
@@ -87,4 +99,43 @@ resource "aws_iam_policy" "cloudwatch_access" {
 resource "aws_iam_role_policy_attachment" "ec2_cloudwatch_access" {
   role       = aws_iam_role.ec2_s3_access.name
   policy_arn = aws_iam_policy.cloudwatch_access.arn
+}
+
+# NEW: IAM Policy for Secrets Manager access
+resource "aws_iam_policy" "secrets_manager_access" {
+  name        = "${var.vpc_name}-secrets-manager-access-policy"
+  description = "Policy for EC2 to access Secrets Manager"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret"
+        ]
+        Resource = [
+          aws_secretsmanager_secret.db_password.arn,
+          aws_secretsmanager_secret.sendgrid_api_key.arn
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt",
+          "kms:DescribeKey"
+        ]
+        Resource = [
+          aws_kms_key.secrets.arn
+        ]
+      }
+    ]
+  })
+}
+
+# Attach Secrets Manager policy to EC2 role
+resource "aws_iam_role_policy_attachment" "ec2_secrets_manager_access" {
+  role       = aws_iam_role.ec2_s3_access.name
+  policy_arn = aws_iam_policy.secrets_manager_access.arn
 }
