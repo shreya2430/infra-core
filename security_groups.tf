@@ -4,31 +4,58 @@ resource "aws_security_group" "load_balancer" {
   description = "Security group for Application Load Balancer"
   vpc_id      = aws_vpc.main.id
 
-  # Allow HTTP (for redirect to HTTPS)
+  # Allow HTTP (for redirect to HTTPS) - IPv4
   ingress {
-    description = "HTTP redirect to HTTPS"
+    description = "HTTP redirect to HTTPS - IPv4"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Allow HTTPS from anywhere
+  # Allow HTTP (for redirect to HTTPS) - IPv6
   ingress {
-    description = "HTTPS from anywhere"
+    description      = "HTTP redirect to HTTPS - IPv6"
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  # Allow HTTPS from anywhere - IPv4
+  ingress {
+    description = "HTTPS from anywhere - IPv4"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Allow all outbound traffic
+  # Allow HTTPS from anywhere - IPv6
+  ingress {
+    description      = "HTTPS from anywhere - IPv6"
+    from_port        = 443
+    to_port          = 443
+    protocol         = "tcp"
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  # Allow all outbound traffic - IPv4
   egress {
-    description = "Allow all outbound traffic"
+    description = "Allow all outbound traffic - IPv4"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Allow all outbound traffic - IPv6
+  egress {
+    description      = "Allow all outbound traffic - IPv6"
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   tags = {
@@ -53,11 +80,19 @@ resource "aws_security_group" "application" {
 
   # Allow all outbound traffic
   egress {
-    description = "Allow all outbound traffic"
+    description = "Allow all outbound traffic IPv4"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    description      = "Allow all outbound traffic IPv6"
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    ipv6_cidr_blocks = ["::/0"]
   }
 
   tags = {

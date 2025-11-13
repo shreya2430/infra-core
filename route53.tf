@@ -16,3 +16,16 @@ resource "aws_route53_record" "main" {
     evaluate_target_health = true
   }
 }
+
+# Create AAAA record pointing to Load Balancer (alias record for IPv6)
+resource "aws_route53_record" "main_ipv6" {
+  zone_id = data.aws_route53_zone.main.zone_id
+  name    = var.domain_name
+  type    = "AAAA"
+
+  alias {
+    name                   = aws_lb.app.dns_name
+    zone_id                = aws_lb.app.zone_id
+    evaluate_target_health = true
+  }
+}

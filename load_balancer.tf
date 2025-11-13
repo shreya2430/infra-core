@@ -30,6 +30,7 @@ resource "aws_lb" "app" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.load_balancer.id]
   subnets            = aws_subnet.public[*].id
+  ip_address_type    = "dualstack"
 
   enable_deletion_protection = false
 
